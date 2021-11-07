@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <title>Online Classes</title>
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <link rel="stylesheet" href="{{ url_for('static',filename='style/output.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+<body>
+
+    <input class="c-checkbox" type="checkbox" id="start">
+    <input class="c-checkbox" type="checkbox" id="finish">
+    <div class="c-form__progress"><!--add student name-->
+  </div>
+    
+    <div class="c-formContainer">
+      <div class="c-stream">
+        <div class="instructions"><p id="instruction-text">Welcome</p></div>
+        <div class="video" style="background-color: black;"><canvas id="canvasOutput"></canvas><video autoplay="true" id="videoElement"></video></div>
+      </div>
+      <form class="c-form" action="">
+        <div class="c-form__group">
+          <label class="c-form__label" for="username">
+                        <input
+                            type="text"
+                            id="username"
+                            class="c-form__input"
+                            placeholder=" "
+                            pattern="[^\s]+"
+                            required>
+    
+                        <label class="c-form__next" for="finish" role="button">
+                            <span class="c-form__nextIcon"></span>
+                        </label>
+    
+          <span class="c-form__groupLabel">Whats your name??</span>
+          <b class="c-form__border"></b>
+          </label>
+        </div>
+    
+        <label class="c-form__toggle" for="start">Register<span class="c-form__toggleIcon"></span></label>
+      </form>
+    </div>
+</body>
+<script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+
+<script type="text/javascript" src="{{ url_for('static',filename='js/script.js') }}"></script>
+<script async src="{{ url_for('static',filename='js/opencv.js') }}"  onload="onOpenCvReady();"></script>
+</html>
