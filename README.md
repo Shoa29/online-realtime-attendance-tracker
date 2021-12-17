@@ -9,5 +9,6 @@ Modules to install -:
 - numpy
 - opencv-python
 - opencv-contrib-python
+- Pillow
 
 
