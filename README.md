@@ -1,6 +1,6 @@
-# online-realtime-attendance-tracker using opencv facial recognition
+# Realtime Attendance System 
 
-Built using Flask + Socketio + Python + OpenCV + JS + HTML
+Built using Flask socket, opencv, facial recognition and html/js
 
 Modules to install -:
 - Flask
