@@ -19,18 +19,18 @@ def connect():
 
 #on event frame -> checking student's identity
 @socketio.on('frame')
-def frame(data, studentid):
-    print(studentid, " Frame Caught ")
-    id = tracker.trackAttendance(data)
-    if id is None:
+def frame(data, studentname):
+    print(studentname, " Frame Caught ")
+    name = tracker.trackAttendance(data) # sending base64 of frame to model
+    if name is None: #No student 
         print("---MISSING----")
-        emit('missing', id)  
-    elif id == "Unknown" or id!=studentid:
-        print("---WRONG STUDENT----", id, " and ", studentid)
-        emit('wrong', id)
-    elif id==studentid:
+        emit('missing', name)  
+    elif name == "Unknown" or name !=studentname: #wrong person attending class
+        print("---WRONG STUDENT----", name , " and ", studentname)
+        emit('wrong', name)
+    elif name==studentname: #correctly identified
         print("----CORRECT STUDENT----")
-        emit("correct",id)
+        emit("correct",name)
 
 
 

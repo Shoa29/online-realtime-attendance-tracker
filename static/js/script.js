@@ -1,56 +1,56 @@
+// connecting with socket
 var socket = io('http://127.0.0.1:5000', {'force new connection': true});
-console.log("entered script "+ socket);
+
+// getting video displaying html object
 const video = document.querySelector('#videoElement');
 video.width = 500; 
 video.height = 375; ;
-//Core
+
+// streaming webcam 
 window.navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
         video.srcObject = stream;
         video.onloadedmetadata = (e) => {
             video.play();
+            sendFrames()
         };
     })
     .catch( () => {
-        alert('You have give browser the permission to run Webcam and mic ;( ');
+        alert('Give permissions to your browser');
     });
-    //send frames
-function onOpenCvReady() {
-    console.log('OpenCV.js is ready');
-    let src = new cv.Mat(video.height, video.width, cv.CV_8UC4);
-    let dst = new cv.Mat(video.height, video.width, cv.CV_8UC1);
-    let cap = new cv.VideoCapture(video);
-    const FPS = 22;
+
+//send frames in every ~ 8 sec
+function sendFrames() {
+    const FPS = 24; 
     setInterval(() => {
         var studentid = document.getElementById('username');
         checkEvents();
-        cap.read(src);
-        var imgdata = takeFrame()
+        var img_data = captureFrame() // base64 of frame
         var type = "image/png"
-        //var data = document.getElementById("canvasOutput").toDataURL(type);
-        data = imgdata.replace('data:' + type + ';base64,', ''); //split off junk 
-        console.log("Frame caught "+ data);
-        //send room id as well
-        socket.emit('frame', data, studentid.value);
+        data = img_data.replace('data:' + type + ';base64,', ''); //remove junk
+        socket.emit('frame', data, studentid.value); // sending base64 of captured frames
         
-    }, 200000/FPS);
+    }, 200000/FPS); //8 secs interval
     
     
 }
-function takeFrame() {
+
+//function to capture frames
+function captureFrame() {
     var canvas = document.getElementById("canvasOutput");
     var context = canvas.getContext('2d');
+
     if (video.width && video.height) {
       canvas.width = video.width;
       canvas.height = video.height;
-      context.drawImage(video, 0, 0, video.width, video.height);
+      context.drawImage(video, 0, 0, video.width, video.height);//canvas element displaying webcam video
 
-      var data = canvas.toDataURL('image/png');
-      console.log(data);
-      //photo.setAttribute('src', data);
-      return data;
+      var data = canvas.toDataURL('image/png');// converting img to DataURI
+      return data; // returning base64
     }
   }
+
+//function to receive events from socket and output on frontend
 function checkEvents(){
     const instructions = document.getElementById('instruction-text');
     var studentid = document.getElementById('username');
