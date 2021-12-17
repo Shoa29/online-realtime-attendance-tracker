@@ -8,6 +8,7 @@ tracker = track_attendance.FaceDatasetTrain()
 app = Flask(__name__)
 socketio = SocketIO(app)
 
+#rendering frontend 
 @app.route('/', methods=['POST', 'GET'])
 def index():
     return render_template('index.html')
@@ -16,6 +17,7 @@ def index():
 def connect():
     print("Connected")
 
+#on event frame -> checking student's identity
 @socketio.on('frame')
 def frame(data, studentid):
     print(studentid, " Frame Caught ")
@@ -27,7 +29,7 @@ def frame(data, studentid):
         print("---WRONG STUDENT----", id, " and ", studentid)
         emit('wrong', id)
     elif id==studentid:
-        print("--CORRECT STUDENT--")
+        print("----CORRECT STUDENT----")
         emit("correct",id)
 
 

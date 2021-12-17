@@ -4,3 +4,4 @@ python-socketio
 numpy
 opencv-python
 opencv-contrib-python
+Pillow
