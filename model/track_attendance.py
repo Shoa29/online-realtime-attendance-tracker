@@ -24,7 +24,7 @@ class FaceDatasetTrain:
         camstream = cv2.VideoCapture(0) # creates a video capture object
         face_count = 0 #counter for dataset images
         while True: #loop till all frames captured are processed
-            ret, img = camstream.read() # img is the image if videocapture successful -> reads frames
+            ret, img = camstream.read() # img is the frame captured
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # gray scale converted
             face = self.detector.detectMultiScale(gray, 1.05, 5)  # 1.05 scale factor -> 5% reduced scaling more accurate
             for (x, y, w, h) in face:  #coordinates of bounding box detecting face
@@ -42,6 +42,25 @@ class FaceDatasetTrain:
         camstream.release()
         cv2.destroyAllWindows() #releasing camera and destroying cv window
 
+    def testDatasetGenerator(self, studentid):
+        """
+        Generates 20 images of student as a test dataset
+        :param studentid:student's name
+        :return: None
+        """
+        camstream = cv2.VideoCapture(0) # creates a video capture object
+        face_count = 0 #counter for dataset images
+        while True:
+            ret, img = camstream.read()
+            cv2.imwrite("model/test_data/student." + studentid + '.' + str(face_count) + ".jpg", img)  # saving image to test dataset folder
+            cv2.imshow('frame', img)
+            if cv2.waitKey(100) & 0xFF == ord('q'):
+                break
+            elif face_count >= 20:# break if 20 images
+                break
+        camstream.release()
+        cv2.destroyAllWindows() #releasing camera and destroying cv window
+
     def train(self):
         """
         Function to train the model on dataset of student images
@@ -53,11 +72,11 @@ class FaceDatasetTrain:
         for path in image_paths:  # traversing through all dataset images
             pilimg = Image.open(path).convert('L')  # opening image and converting to gray scale using PIL
             imgnp = np.array(pilimg)  # converts image to np array giving individual pixels values
-            id = os.path.split(path)[-1].split(".")[1] # getting student name from path
+            name = os.path.split(path)[-1].split(".")[1] # getting student name from path
             face = self.detector.detectMultiScale(imgnp)  # extract the face from image
             for (x, y, w, h) in face:  # face bounding box coordinates
                 faces.append(imgnp[y:y + h, x:x + w])
-                student_ids.append(self.students[id])
+                student_ids.append(self.students[name]) #getting corresponding id of student
         self.recognizer.train(faces, np.array(student_ids)) #training list of faces corresponding to student ids
         self.recognizer.save('model/trainer.yml')
 
@@ -90,6 +109,31 @@ class FaceDatasetTrain:
             else:
                 return "Unknown" # unknown face detected
 
+    def calcAccuracy(self):
+        """
+        Function to test the face recognizer on test data to measure accuracy.
+        :return: accuracy : float datatype
+        """
+        image_paths = [os.path.join("model/test_data/", f) for f in os.listdir("model/test_data/")]  # list of all paths for images
+        success_count = 0 # count on successfully predicted images
+        for path in image_paths:
+            student_name = os.path.split(path)[-1].split(".")[1] # getting actual student name
+            with open(path, "rb") as img:
+                imgdata = base64.b64encode(img.read()) #converting images to base64
+                result = self.trackAttendance(imgdata) # predicted student
+                if result=="Unknown" or None:
+                    continue
+                elif result==student_name: #correct result from face recognition
+                    success_count = success_count + 1
+        n = len(image_paths) # total number of images
+        accuracy = success_count/n
+        return accuracy
+
+
+
+
 if __name__=='__main__':
     studentobj = FaceDatasetTrain()
     studentobj.train()
+
+
