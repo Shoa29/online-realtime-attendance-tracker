@@ -1,6 +1,6 @@
 # Realtime Attendance System 
 
-Built using Flask socket, opencv, facial recognition and html/js
+Built using Flask socket, opencv, facial recognition [Casscade classifier] and html/js
 
 Modules to install -:
 - Flask
@@ -9,5 +9,6 @@ Modules to install -:
 - numpy
 - opencv-python
 - opencv-contrib-python
+- Pillow
 
 
